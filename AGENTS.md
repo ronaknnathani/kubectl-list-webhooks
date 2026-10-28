@@ -14,7 +14,7 @@ Use the Makefile targets; they pin and bootstrap tooling where needed.
 ```bash
 make build          # go mod tidy, tests, lint, then build
 make test           # unit tests
-make lint           # pinned golangci-lint v2.12.2
+make lint           # pinned golangci-lint v2.15.0
 make ci             # local equivalent of GitHub Actions checks
 make test-coverage  # coverage report
 ```

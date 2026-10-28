@@ -1,0 +1,7 @@
+/bin/
+/dist/
+/.tools/
+/kubectl-list_webhooks
+*.test
+*.out
+coverage.out

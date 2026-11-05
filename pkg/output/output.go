@@ -108,11 +108,11 @@ func render(w io.Writer, header []string, lines []line, color bool) error {
 		return fmt.Errorf("aligning table: %w", err)
 	}
 
-	out := table.Bytes()
+	out := table.String()
 	if color {
-		out = colorize(table.String(), lines)
+		out = colorize(out, lines)
 	}
-	if _, err := w.Write(out); err != nil {
+	if _, err := io.WriteString(w, out); err != nil {
 		return fmt.Errorf("writing table: %w", err)
 	}
 	return nil
@@ -120,7 +120,7 @@ func render(w io.Writer, header []string, lines []line, color bool) error {
 
 // colorize wraps the aligned header line in bold and each row line in its
 // type's shade for its band.
-func colorize(table string, lines []line) []byte {
+func colorize(table string, lines []line) string {
 	formatted := strings.Split(strings.TrimSuffix(table, "\n"), "\n")
 	band := bands(lines)
 	var b strings.Builder
@@ -128,7 +128,7 @@ func colorize(table string, lines []line) []byte {
 	for i, l := range lines {
 		fmt.Fprintf(&b, "\x1b[38;5;%dm%s%s\n", shades[l.typ][band[i]], formatted[i+1], reset)
 	}
-	return []byte(b.String())
+	return b.String()
 }
 
 // bands assigns each line a shade index (0 or 1) that flips whenever the group

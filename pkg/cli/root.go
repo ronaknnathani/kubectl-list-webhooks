@@ -107,7 +107,9 @@ func (o *options) run(cmd *cobra.Command) error {
 	}
 	rows = webhooks.Filter(rows, o.verb, o.resource)
 
-	color := useColor(cmd)
+	// Color only when stdout is a terminal.
+	f, isFile := cmd.OutOrStdout().(*os.File)
+	color := isFile && term.IsTerminal(int(f.Fd()))
 	if !o.summary {
 		if len(rows) == 0 {
 			return printNoWebhooks(cmd)
@@ -157,12 +159,6 @@ func printNoWebhooks(cmd *cobra.Command) error {
 		return fmt.Errorf("writing empty-result message: %w", err)
 	}
 	return nil
-}
-
-// useColor reports whether stdout is a terminal, the only case that gets color.
-func useColor(cmd *cobra.Command) bool {
-	f, ok := cmd.OutOrStdout().(*os.File)
-	return ok && term.IsTerminal(int(f.Fd()))
 }
 
 // newClient builds a Kubernetes client from the kubeconfig at path, or from the

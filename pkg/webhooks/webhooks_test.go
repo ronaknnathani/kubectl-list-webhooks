@@ -162,6 +162,7 @@ func TestFilter(t *testing.T) {
 		row("", "pods", "CREATE"),
 		row("", "pods", "*"),
 		row("", "pods/exec", "CONNECT"),
+		row("", "pods/*", "CONNECT"),
 		row("apps", "deployments", "UPDATE"),
 		row("extensions", "deployments", "UPDATE"),
 		row("*", "*", "DELETE"),
@@ -189,9 +190,16 @@ func TestFilter(t *testing.T) {
 			},
 		},
 		{
-			name:     "subresource matches exact, */*, and */sub but not *",
+			name:     "subresource matches exact, res/*, */*, and */sub but not *",
 			resource: "pods/exec",
-			want:     []Row{row("", "pods/exec", "CONNECT"), row("*", "*/*", "CREATE"), row("", "*/exec", "CONNECT")},
+			want: []Row{
+				row("", "pods/exec", "CONNECT"), row("", "pods/*", "CONNECT"), row("*", "*/*", "CREATE"), row("", "*/exec", "CONNECT"),
+			},
+		},
+		{
+			name:     "res/* does not cover another resource's subresource",
+			resource: "deployments/scale",
+			want:     []Row{row("*", "*/*", "CREATE")},
 		},
 		{
 			name:     "resource without group matches any group",

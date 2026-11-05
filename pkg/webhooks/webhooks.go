@@ -157,13 +157,18 @@ func Filter(rows []Row, verb, resource string) []Row {
 }
 
 // covers reports whether a rule resource covers the resource name: `*` covers
-// any top-level resource, `*/*` covers anything, and `*/sub` covers any `x/sub`.
+// any top-level resource, `*/*` covers anything, `x/*` covers any `x/sub` (but
+// not `x`), and `*/sub` covers any `x/sub`.
 func covers(rule, name string) bool {
 	switch rule {
 	case name, "*/*":
 		return true
 	case "*":
 		return !strings.Contains(name, "/")
+	}
+	if ruleRes, ok := strings.CutSuffix(rule, "/*"); ok {
+		res, sub, ok := strings.Cut(name, "/")
+		return ok && res == ruleRes && sub != ""
 	}
 	ruleSub, ok := strings.CutPrefix(rule, "*/")
 	if !ok {

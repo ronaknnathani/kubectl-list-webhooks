@@ -1,0 +1,62 @@
+apiVersion: krew.googlecontainertools.github.com/v1alpha2
+kind: Plugin
+metadata:
+  name: list-webhooks
+spec:
+  version: {{ .TagName }}
+  homepage: https://github.com/ronaknnathani/kubectl-list-webhooks
+  shortDescription: "List admission webhooks by resource and verb"
+  description: |
+    Lists the admission webhooks registered in a Kubernetes cluster, read
+    from MutatingWebhookConfigurations and ValidatingWebhookConfigurations
+    (admissionregistration.k8s.io/v1), as one row per webhook, resource, and
+    verb.
+
+    - Filters by webhook type (--type), admission operation (--verb), and
+      resource (--resource).
+    - Prints per-type webhook and rule counts with --summary, optionally
+      broken down by resource (--by-resource) and verb (--by-verb).
+
+    The tool never mutates the cluster.
+  caveats: |
+    This plugin requires read access to the cluster. Specifically, it needs
+    permission to list mutatingwebhookconfigurations and
+    validatingwebhookconfigurations (admissionregistration.k8s.io,
+    cluster-scoped). It performs no writes.
+  platforms:
+  - selector:
+      matchLabels:
+        os: linux
+        arch: amd64
+    {{addURIAndSha "https://github.com/ronaknnathani/kubectl-list-webhooks/releases/download/{{ .TagName }}/kubectl-list-webhooks_{{ .TagName }}_linux_amd64.tar.gz" .TagName }}
+    bin: kubectl-list_webhooks
+  - selector:
+      matchLabels:
+        os: linux
+        arch: arm64
+    {{addURIAndSha "https://github.com/ronaknnathani/kubectl-list-webhooks/releases/download/{{ .TagName }}/kubectl-list-webhooks_{{ .TagName }}_linux_arm64.tar.gz" .TagName }}
+    bin: kubectl-list_webhooks
+  - selector:
+      matchLabels:
+        os: darwin
+        arch: amd64
+    {{addURIAndSha "https://github.com/ronaknnathani/kubectl-list-webhooks/releases/download/{{ .TagName }}/kubectl-list-webhooks_{{ .TagName }}_darwin_amd64.tar.gz" .TagName }}
+    bin: kubectl-list_webhooks
+  - selector:
+      matchLabels:
+        os: darwin
+        arch: arm64
+    {{addURIAndSha "https://github.com/ronaknnathani/kubectl-list-webhooks/releases/download/{{ .TagName }}/kubectl-list-webhooks_{{ .TagName }}_darwin_arm64.tar.gz" .TagName }}
+    bin: kubectl-list_webhooks
+  - selector:
+      matchLabels:
+        os: windows
+        arch: amd64
+    {{addURIAndSha "https://github.com/ronaknnathani/kubectl-list-webhooks/releases/download/{{ .TagName }}/kubectl-list-webhooks_{{ .TagName }}_windows_amd64.zip" .TagName }}
+    bin: kubectl-list_webhooks.exe
+  - selector:
+      matchLabels:
+        os: windows
+        arch: arm64
+    {{addURIAndSha "https://github.com/ronaknnathani/kubectl-list-webhooks/releases/download/{{ .TagName }}/kubectl-list-webhooks_{{ .TagName }}_windows_arm64.zip" .TagName }}
+    bin: kubectl-list_webhooks.exe

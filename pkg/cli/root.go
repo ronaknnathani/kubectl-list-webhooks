@@ -54,7 +54,8 @@ type options struct {
 // Execute runs the command and returns the process exit code.
 func Execute(build BuildInfo) int {
 	if err := newCommand(build, newClient).Execute(); err != nil {
-		fmt.Fprintln(os.Stderr, "error:", err)
+		// Prefix every line, since a joined error spans several.
+		fmt.Fprintln(os.Stderr, "error: "+strings.ReplaceAll(err.Error(), "\n", "\nerror: "))
 		return 1
 	}
 	return 0

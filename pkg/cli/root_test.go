@@ -308,3 +308,30 @@ func TestHelpFlags(t *testing.T) {
 		t.Errorf("flags = %v, want %v", got, want)
 	}
 }
+
+func TestExecutePrefixesEveryErrorLine(t *testing.T) {
+	oldArgs, oldStderr := os.Args, os.Stderr
+	t.Cleanup(func() { os.Args, os.Stderr = oldArgs, oldStderr })
+	stderr, err := os.Create(filepath.Join(t.TempDir(), "stderr"))
+	if err != nil {
+		t.Fatalf("create stderr file: %v", err)
+	}
+	os.Args = []string{"kubectl-list_webhooks", "--type", "foo", "--verb", "bar"}
+	os.Stderr = stderr
+
+	if code := Execute(build); code != 1 {
+		t.Errorf("exit code = %d, want 1", code)
+	}
+	if err = stderr.Close(); err != nil {
+		t.Fatalf("close stderr file %s: %v", stderr.Name(), err)
+	}
+	got, err := os.ReadFile(stderr.Name())
+	if err != nil {
+		t.Fatalf("read stderr file %s: %v", stderr.Name(), err)
+	}
+	want := "error: invalid --type \"foo\": must be validating or mutating\n" +
+		"error: invalid --verb \"bar\": must be CREATE, UPDATE, DELETE, or CONNECT\n"
+	if string(got) != want {
+		t.Errorf("stderr = %q, want %q", got, want)
+	}
+}

@@ -1,4 +1,4 @@
-.PHONY: build clean test test-coverage install install-plugin deps run lint check ci help
+.PHONY: build clean test test-coverage install install-plugin deps run lint snapshot check ci help
 
 BINARY := kubectl-list_webhooks
 PKG := ./cmd/$(BINARY)
@@ -50,6 +50,10 @@ $(GOLANGCI_LINT):
 	mkdir -p $(dir $@)
 	GOBIN=$(dir $@) go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(GOLANGCI_LINT_VERSION)
 
+# Local release test (no publish)
+snapshot:
+	goreleaser release --snapshot --clean
+
 # Install the plugin onto your PATH so `kubectl list-webhooks` works
 install: build
 	mkdir -p ~/.local/bin
@@ -80,6 +84,7 @@ help:
 	@echo "  lint           - Run golangci-lint"
 	@echo "  check          - Run tests and linter"
 	@echo "  ci             - Run the same checks as GitHub Actions"
+	@echo "  snapshot       - Build snapshot release (goreleaser)"
 	@echo "  install        - Install to ~/.local/bin"
 	@echo "  install-plugin - Install as kubectl plugin"
 	@echo "  deps           - Download dependencies"

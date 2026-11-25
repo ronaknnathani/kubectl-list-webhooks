@@ -1,0 +1,53 @@
+version: 2
+
+project_name: kubectl-list-webhooks
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: kubectl-list-webhooks
+    main: ./cmd/kubectl-list_webhooks
+    binary: kubectl-list_webhooks
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+      - -X main.commit={{.Commit}}
+      - -X main.date={{.Date}}
+
+archives:
+  - id: default
+    formats: [tar.gz]
+    name_template: "{{ .ProjectName }}_{{ .Tag }}_{{ .Os }}_{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+
+checksum:
+  name_template: "checksums.txt"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+
+release:
+  github:
+    owner: ronaknnathani
+    name: kubectl-list-webhooks
+  draft: false
+  prerelease: auto
+  name_template: "{{ .Tag }}"

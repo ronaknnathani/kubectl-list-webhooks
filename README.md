@@ -39,8 +39,6 @@ Each row shows the webhook's `TYPE`, the `CONFIGURATION` it belongs to, the
 - Mutating rows come before validating rows (the order admission runs them),
   then rows are sorted by resource, configuration, webhook, and verb. Verbs
   follow API order: `*`, CREATE, UPDATE, DELETE, CONNECT.
-- It makes at most two LIST calls (one per configuration kind, or one with
-  `--type`), no GET or discovery calls, and does all filtering in memory.
 
 ## Installation
 
@@ -171,7 +169,9 @@ error: invalid --type "foo": must be validating or mutating
 
 The plugin needs `list` on `mutatingwebhookconfigurations` and
 `validatingwebhookconfigurations` (`admissionregistration.k8s.io`,
-cluster-scoped). It performs no writes and makes at most two LIST calls.
+cluster-scoped). It performs no writes and makes at most two LIST calls (one
+per configuration kind, or one with `--type`), no GET or discovery calls, and
+does all filtering in memory.
 
 ## Not covered
 

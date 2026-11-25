@@ -17,11 +17,12 @@ make test           # unit tests
 make lint           # pinned golangci-lint v2.15.0
 make ci             # local equivalent of GitHub Actions checks
 make test-coverage  # coverage report
+make snapshot       # local GoReleaser snapshot
 ```
 
-Run `make ci` before pushing meaningful code or workflow changes. For docs-only
-changes, at least run `git diff --check`; run more if docs touch commands or
-install instructions.
+Run `make ci` before pushing meaningful code, workflow, or release changes. For
+docs-only changes, at least run `git diff --check`; run more if docs touch
+commands, install, or release instructions.
 
 ## Development conventions
 
@@ -70,3 +71,17 @@ install instructions.
   the exact proposed text first.
 - Prefer `gh` for GitHub operations.
 - After pushing, check GitHub Actions and report whether CI passed.
+
+## Release and distribution notes
+
+- Tags are annotated semver tags (`vX.Y.Z`) and trigger the Release workflow.
+- The Release workflow runs the tests, then GoReleaser publishes cross-platform
+  archives and `checksums.txt`. The archive is named after the project and tag
+  (`kubectl-list-webhooks_<vTag>_<os>_<arch>`) with the `kubectl-list_webhooks`
+  binary inside. The archive tag matches the git tag verbatim (with the leading
+  `v`), which the asset URLs in `.krew.yaml` rely on.
+- `install.sh` downloads the latest release archive and installs the binary onto
+  the user's `PATH`.
+- `.krew.yaml` at the repo root is the krew manifest template. The Release
+  workflow has no `krew-release-bot` step, and nothing is submitted to
+  `krew-index` yet.
